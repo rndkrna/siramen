@@ -1,47 +1,112 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="margin-top: 30px;">
-    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 30px; color: #1f2937;">Dashboard</h1>
+<div style="margin-bottom: 32px;">
+    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Halo, Selamat Datang!</h2>
+    <p style="color: var(--text-muted); font-size: 14px;">Apa yang ingin kamu kerjakan hari ini?</p>
+</div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;">
-        <!-- Stats Card -->
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h3 style="color: #6b7280; font-size: 14px; font-weight: 600; margin-bottom: 10px;">Total Subjects</h3>
-            <p style="font-size: 28px; font-weight: bold; color: #3b82f6;">{{ $stats['subjects'] ?? 0 }}</p>
+<div class="menu-grid">
+    <!-- Ringkas Materi -->
+    <a href="{{ route('documents.create') }}" class="menu-card">
+        <i data-lucide="file-text"></i>
+        <div>
+            <h3>Ringkas Materi Kuliah</h3>
+            <p>Upload PDF slide/modul, langsung dapat rangkuman + poin penting.</p>
         </div>
-
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h3 style="color: #6b7280; font-size: 14px; font-weight: 600; margin-bottom: 10px;">Total Deadlines</h3>
-            <p style="font-size: 28px; font-weight: bold; color: #8b5cf6;">{{ $stats['deadlines'] ?? 0 }}</p>
+        <div style="margin-top: auto;">
+            <span class="badge badge-purple">AI · NLP</span>
         </div>
+    </a>
 
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h3 style="color: #6b7280; font-size: 14px; font-weight: 600; margin-bottom: 10px;">Total Documents</h3>
-            <p style="font-size: 28px; font-weight: bold; color: #ec4899;">{{ $stats['documents'] ?? 0 }}</p>
+    <!-- Manajemen Deadline -->
+    <a href="{{ route('deadlines.index') }}" class="menu-card">
+        <i data-lucide="calendar" style="color: var(--primary-green);"></i>
+        <div>
+            <h3>Manajemen Deadline</h3>
+            <p>Input jadwal UTS, tugas, dan seminar. Sistem otomatis ingatkan H-7.</p>
         </div>
+        <div style="margin-top: auto;">
+            <span style="font-size: 10px; color: var(--primary-green);">Kalender · Notif</span>
+        </div>
+    </a>
 
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h3 style="color: #6b7280; font-size: 14px; font-weight: 600; margin-bottom: 10px;">Total Quizzes</h3>
-            <p style="font-size: 28px; font-weight: bold; color: #f59e0b;">{{ $stats['quizzes'] ?? 0 }}</p>
+    <!-- Generator Soal -->
+    <a href="{{ route('quizzes.index') }}" class="menu-card">
+        <i data-lucide="brain" style="color: #FFD600;"></i>
+        <div>
+            <h3>Generator Soal Latihan</h3>
+            <p>Buat kuis otomatis dari materi kuliah Anda untuk belajar mandiri.</p>
+        </div>
+        <div style="margin-top: auto;">
+            <span style="font-size: 10px; color: #FFD600;">AI · Gamifikasi</span>
+        </div>
+    </a>
+
+    <!-- Planner Tugas Kelompok -->
+    <a href="{{ route('teams.index') }}" class="menu-card">
+        <i data-lucide="users" style="color: #00B0FF;"></i>
+        <div>
+            <h3>Planner Tugas Kelompok</h3>
+            <p>Bagi tugas antar anggota dan lacak progres proyek kelompok.</p>
+        </div>
+        <div style="margin-top: auto;">
+            <span style="font-size: 10px; color: #00B0FF;">Kolaborasi</span>
+        </div>
+    </a>
+
+    <!-- Manajemen Mata Kuliah -->
+    <a href="{{ route('subjects.index') }}" class="menu-card">
+        <i data-lucide="book-open" style="color: var(--primary-purple);"></i>
+        <div>
+            <h3>Manajemen Mata Kuliah</h3>
+            <p>Atur daftar mata kuliah, semester, dan label warna untuk setiap subjek.</p>
+        </div>
+        <div style="margin-top: auto;">
+            <span style="font-size: 10px; color: var(--primary-purple);">Subjek · Semester</span>
+        </div>
+    </a>
+
+    <!-- Catatan dari Rekaman -->
+    <div class="menu-card" style="opacity: 0.6; cursor: not-allowed;">
+        <i data-lucide="mic" style="color: var(--accent-red);"></i>
+        <div>
+            <h3>Catatan dari Rekaman</h3>
+            <p>Rekam kuliah, otomatis transkrip dan buat catatan terstruktur.</p>
+        </div>
+        <div style="margin-top: auto;">
+            <span class="badge" style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-size: 8px;">COMING SOON</span>
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 40px;">
-        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Quick Actions</h2>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <a href="{{ route('subjects.create') }}" class="btn btn-primary">+ Create Subject</a>
-            <a href="{{ route('deadlines.create') }}" class="btn btn-primary">+ Create Deadline</a>
-            <a href="{{ route('documents.create') }}" class="btn btn-primary">+ Upload Document</a>
-            <a href="{{ route('quizzes.index') }}" class="btn btn-primary">Create Quiz</a>
+    <!-- Template Dokumen -->
+    <div class="menu-card" style="opacity: 0.6; cursor: not-allowed;">
+        <i data-lucide="mail" style="color: #AA00FF;"></i>
+        <div>
+            <h3>Template Dokumen Cepat</h3>
+            <p>Generate surat izin, proposal PKM, abstrak skripsi dengan AI.</p>
+        </div>
+        <div style="margin-top: auto;">
+            <span class="badge" style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-size: 8px;">COMING SOON</span>
         </div>
     </div>
+</div>
 
-    <!-- Recent Activity -->
-    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Recent Activity</h2>
-        <p style="color: #6b7280;">Activity logs will appear here...</p>
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 32px;">
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); text-align: center;">
+        <i data-lucide="book-open" style="color: var(--primary-purple); width: 24px; height: 24px; margin-bottom: 8px;"></i>
+        <h3 style="font-size: 24px; margin-bottom: 4px;">{{ $stats['subjects_count'] ?? 0 }}</h3>
+        <p style="font-size: 12px; color: var(--text-muted);">Mata Kuliah</p>
+    </div>
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); text-align: center;">
+        <i data-lucide="calendar" style="color: var(--primary-green); width: 24px; height: 24px; margin-bottom: 8px;"></i>
+        <h3 style="font-size: 24px; margin-bottom: 4px;">{{ $stats['deadlines_count'] ?? 0 }}</h3>
+        <p style="font-size: 12px; color: var(--text-muted);">Deadline Aktif</p>
+    </div>
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); text-align: center;">
+        <i data-lucide="file-text" style="color: #00B0FF; width: 24px; height: 24px; margin-bottom: 8px;"></i>
+        <h3 style="font-size: 24px; margin-bottom: 4px;">{{ $stats['documents_count'] ?? 0 }}</h3>
+        <p style="font-size: 12px; color: var(--text-muted);">Dokumen Tersimpan</p>
     </div>
 </div>
 @endsection

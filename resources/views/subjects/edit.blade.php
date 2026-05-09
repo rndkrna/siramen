@@ -1,26 +1,45 @@
-@extends('layouts.app', ['title' => 'Edit Subject'])
+@extends('layouts.app')
 
 @section('content')
-<div style="margin-top: 30px; max-width: 600px;">
-    <h1 style="font-size: 28px; font-weight: bold; margin-bottom: 30px; color: #1f2937;">Edit Subject</h1>
+<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+    <a href="{{ route('subjects.index') }}" style="color: white; background: var(--card-bg); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; border: 1px solid var(--border-color);">
+        <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i>
+    </a>
+    <h1 style="margin-bottom: 0;">Edit Mata Kuliah</h1>
+</div>
 
-    <form method="POST" action="{{ route('subjects.update', $subject) }}" style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+<div class="summary-container" style="max-width: 600px;">
+    <form method="POST" action="{{ route('subjects.update', $subject) }}">
         @csrf
         @method('PUT')
 
-        <div class="form-group">
-            <label for="name">Subject Name *</label>
-            <input type="text" id="name" name="name" required value="{{ old('name', $subject->name) }}" placeholder="e.g., Mathematics">
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">NAMA MATA KULIAH</label>
+            <input type="text" name="name" required value="{{ old('name', $subject->name) }}" placeholder="Contoh: Algoritma & Struktur Data" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 12px; font-family: inherit;">
         </div>
 
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" placeholder="Describe this subject..." rows="4">{{ old('description', $subject->description) }}</textarea>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">SEMESTER</label>
+                <select name="semester" style="width: 100%; background: #222; border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 12px; font-family: inherit; appearance: none;">
+                    @for($i=1; $i<=8; $i++)
+                        <option value="{{ $i }}" {{ $subject->semester == $i ? 'selected' : '' }}>Semester {{ $i }}</option>
+                    @endfor
+                </select>
+            </div>
+            <div>
+                <label style="display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">LABEL WARNA</label>
+                <input type="color" name="color_hex" value="{{ old('color_hex', $subject->color_hex ?? '#7C4DFF') }}" style="width: 100%; background: #222; border: 1px solid var(--border-color); height: 45px; padding: 4px; border-radius: 12px; cursor: pointer;">
+            </div>
         </div>
 
-        <div style="display: flex; gap: 10px; margin-top: 30px;">
-            <button type="submit" class="btn btn-primary">Update Subject</button>
-            <a href="{{ route('subjects.index') }}" class="btn btn-secondary" style="background-color: #6b7280;">Cancel</a>
+        <div style="margin-top: 32px; display: flex; gap: 12px;">
+            <button type="submit" style="flex: 1; background: var(--primary-purple); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-purple);">
+                UPDATE MATA KULIAH
+            </button>
+            <a href="{{ route('subjects.index') }}" style="background: rgba(255,255,255,0.05); color: white; text-decoration: none; padding: 14px 24px; border-radius: 12px; font-weight: 600; border: 1px solid var(--border-color);">
+                BATAL
+            </a>
         </div>
     </form>
 </div>

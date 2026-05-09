@@ -3,62 +3,106 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Deadline;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DeadlineController extends Controller
 {
+    private function getCurrentUser()
+    {
+        return auth()->user() ?? User::first();
+    }
+
     /**
      * Daftar semua deadline milik user.
-     * GET /api/deadlines
      */
     public function index(Request $request): JsonResponse
     {
-        // TODO: return deadlines, filter by is_done, due_date, subject_id, priority
+        $user = $this->getCurrentUser();
+
+        $deadlines = Deadline::where('user_id', $user->id)
+            ->when($request->subject_id, fn($q) => $q->where('subject_id', $request->subject_id))
+            ->when($request->has('is_done'), fn($q) => $q->where('is_done', $request->boolean('is_done')))
+            ->orderBy('due_date', 'asc')
+            ->get();
+
+        return response()->json($deadlines);
     }
 
     /**
      * Buat deadline baru.
-     * POST /api/deadlines
      */
     public function store(Request $request): JsonResponse
     {
-        // TODO: validate & create deadline
+        $user = $this->getCurrentUser();
+
+        $validated = $request->validate([
+            'subject_id' => 'required|exists:subjects,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'required|date',
+            'priority' => 'nullable|in:low,medium,high',
+        ]);
+
+        $deadline = Deadline::create(array_merge($validated, [
+            'user_id' => $user->id,
+            'is_done' => false,
+        ]));
+
+        return response()->json($deadline, 201);
     }
 
     /**
      * Detail deadline tertentu.
-     * GET /api/deadlines/{deadline}
      */
     public function show(string $id): JsonResponse
     {
-        // TODO: return deadline dengan notifications
+        $deadline = Deadline::with('subject')->findOrFail($id);
+        return response()->json($deadline);
     }
 
     /**
      * Update deadline.
-     * PUT /api/deadlines/{deadline}
      */
     public function update(Request $request, string $id): JsonResponse
     {
-        // TODO: validate & update deadline
+        $deadline = Deadline::findOrFail($id);
+
+        $validated = $request->validate([
+            'subject_id' => 'sometimes|exists:subjects,id',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'sometimes|date',
+            'priority' => 'sometimes|in:low,medium,high',
+            'is_done' => 'sometimes|boolean',
+        ]);
+
+        $deadline->update($validated);
+
+        return response()->json($deadline);
     }
 
     /**
      * Tandai deadline selesai / belum selesai.
-     * PATCH /api/deadlines/{deadline}/toggle
      */
     public function toggle(string $id): JsonResponse
     {
-        // TODO: flip is_done field
+        $deadline = Deadline::findOrFail($id);
+        $deadline->update(['is_done' => !$deadline->is_done]);
+
+        return response()->json($deadline);
     }
 
     /**
      * Hapus deadline.
-     * DELETE /api/deadlines/{deadline}
      */
     public function destroy(string $id): JsonResponse
     {
-        // TODO: delete deadline
+        $deadline = Deadline::findOrFail($id);
+        $deadline->delete();
+
+        return response()->json(['message' => 'Deadline deleted successfully.']);
     }
 }

@@ -1,69 +1,40 @@
-@extends('layouts.app', ['title' => $quiz->title])
+@extends('layouts.app')
 
 @section('content')
-<div style="margin-top: 30px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <div>
-            <h1 style="font-size: 28px; font-weight: bold; color: #1f2937;">{{ $quiz->title }}</h1>
-            <p style="color: #6b7280; margin-top: 5px;">Subject: {{ $quiz->subject?->name ?? 'N/A' }}</p>
-        </div>
-        <a href="{{ route('quizzes.index') }}" class="btn btn-secondary" style="background-color: #6b7280;">Back</a>
-    </div>
+<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+    <a href="{{ route('quizzes.index') }}" style="color: white; background: var(--card-bg); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; border: 1px solid var(--border-color);">
+        <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i>
+    </a>
+    <h1 style="margin-bottom: 0; font-size: 20px;">Latihan Kuis</h1>
+</div>
 
-    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 30px;">
-        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 15px;">Quiz Details</h2>
-        <table style="width: 100%; border: 1px solid #e5e7eb;">
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600; background-color: #f9fafb; width: 30%;">Total Questions</td>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">{{ $quiz->questions_count ?? 0 }}</td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600; background-color: #f9fafb;">Document</td>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">
-                    @if ($quiz->document)
-                        <a href="{{ route('documents.show', $quiz->document) }}" style="color: #3b82f6; text-decoration: none;">
-                            {{ $quiz->document->title }}
-                        </a>
-                    @else
-                        N/A
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600; background-color: #f9fafb;">Created</td>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">{{ $quiz->created_at->format('F j, Y H:i') }}</td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; font-weight: 600; background-color: #f9fafb;">Updated</td>
-                <td style="padding: 10px;">{{ $quiz->updated_at->format('F j, Y H:i') }}</td>
-            </tr>
-        </table>
-    </div>
+<div style="margin-bottom: 24px;">
+    <h2 style="font-size: 18px; margin-bottom: 8px;">{{ $quiz->title }}</h2>
+    <p style="font-size: 12px; color: var(--text-muted);">{{ $quiz->total_questions }} Pertanyaan • Dari: {{ $quiz->document->file_name }}</p>
+</div>
 
-    @if ($quiz->questions->count() > 0)
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 20px;">Questions ({{ $quiz->questions->count() }})</h2>
-            
-            @foreach ($quiz->questions as $index => $question)
-                <div style="padding: 15px; border-left: 4px solid #3b82f6; background-color: #f9fafb; margin-bottom: 15px; border-radius: 4px;">
-                    <p style="font-weight: 600; margin-bottom: 10px;">{{ $index + 1 }}. {{ $question->question }}</p>
-                    <ul style="margin-left: 20px; margin-bottom: 10px;">
-                        @if (isset($question->options) && is_array($question->options))
-                            @foreach ($question->options as $option)
-                                <li style="margin-bottom: 5px;">{{ $option }}</li>
-                            @endforeach
-                        @endif
-                    </ul>
-                    @if ($question->correct_answer)
-                        <p style="color: #065f46; font-weight: 500;">✓ Correct Answer: {{ $question->correct_answer }}</p>
-                    @endif
-                </div>
+<form action="{{ route('quizzes.submit', $quiz) }}" method="POST">
+    @csrf
+    @foreach($quiz->questions as $index => $question)
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 24px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+        <p style="font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+            <span style="color: var(--primary-purple); font-weight: 700; margin-right: 8px;">{{ $index + 1 }}.</span>
+            {{ $question->question_text }}
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            @foreach($question->options as $optIndex => $option)
+            <label style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='var(--border-color)'" onmouseout="this.style.borderColor='transparent'">
+                <input type="radio" name="answers[{{ $question->id }}]" value="{{ $optIndex }}" required>
+                <span style="font-size: 13px;">{{ $option }}</span>
+            </label>
             @endforeach
         </div>
-    @else
-        <div style="background-color: #f3f4f6; padding: 40px; border-radius: 8px; text-align: center;">
-            <p style="color: #6b7280;">No questions in this quiz</p>
-        </div>
-    @endif
-</div>
+    </div>
+    @endforeach
+
+    <button type="submit" style="width: 100%; background: var(--primary-purple); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-purple); margin-bottom: 40px;">
+        SELESAIKAN KUIS
+    </button>
+</form>
 @endsection

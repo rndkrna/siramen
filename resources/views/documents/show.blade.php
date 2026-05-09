@@ -1,62 +1,66 @@
-@extends('layouts.app', ['title' => $document->title])
+@extends('layouts.app')
 
 @section('content')
-<div style="margin-top: 30px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <div>
-            <h1 style="font-size: 28px; font-weight: bold; color: #1f2937;">{{ $document->title }}</h1>
-            <p style="color: #6b7280; margin-top: 5px;">Subject: {{ $document->subject?->name ?? 'N/A' }}</p>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="{{ route('documents.index') }}" style="color: white; background: var(--card-bg); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; border: 1px solid var(--border-color);">
+            <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i>
+        </a>
+        <h1 style="margin-bottom: 0; font-size: 20px;">Detail Dokumen</h1>
+    </div>
+</div>
+
+<div style="background: var(--card-bg); border-radius: 20px; padding: 24px; border: 1px solid var(--border-color); margin-bottom: 24px;">
+    <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <div style="width: 48px; height: 48px; background: rgba(124, 77, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="file-text" style="color: var(--primary-purple);"></i>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <a href="{{ $document->file_path }}" class="btn btn-primary" download>Download File</a>
-            <a href="{{ route('documents.index') }}" class="btn btn-secondary" style="background-color: #6b7280;">Back</a>
+        <div style="flex: 1;">
+            <h3 style="font-size: 18px; margin-bottom: 4px;">{{ $document->file_name }}</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">{{ $document->subject->name }} • {{ $document->file_size_kb }} KB</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <a href="{{ $document->file_url }}" target="_blank" style="background: #333; color: white; padding: 8px 16px; border-radius: 12px; text-decoration: none; font-size: 12px; font-weight: 600;">BUKA FILE</a>
         </div>
     </div>
+</div>
 
-    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 30px;">
-        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 15px;">Document Details</h2>
-        <table style="width: 100%; border: 1px solid #e5e7eb;">
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600; background-color: #f9fafb; width: 30%;">File Type</td>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">{{ strtoupper($document->file_type) }}</td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600; background-color: #f9fafb;">File Size</td>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">{{ number_format($document->file_size / 1024 / 1024, 2) }} MB</td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600; background-color: #f9fafb;">Uploaded</td>
-                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">{{ $document->created_at->format('F j, Y H:i') }}</td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; font-weight: 600; background-color: #f9fafb;">Updated</td>
-                <td style="padding: 10px;">{{ $document->updated_at->format('F j, Y H:i') }}</td>
-            </tr>
-        </table>
-    </div>
-
-    @if ($document->description)
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 30px;">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 15px;">Description</h2>
-            <p style="color: #374151; line-height: 1.6;">{{ $document->description }}</p>
-        </div>
-    @endif
-
-    @if ($document->summary)
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 30px;">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 15px;">
-                Summary
-                <a href="{{ route('documents.summary.generate', $document) }}" class="btn btn-primary" style="padding: 4px 8px; font-size: 12px;">Regenerate</a>
-            </h2>
-            <p style="color: #374151; line-height: 1.6;">{{ $document->summary->content }}</p>
-        </div>
-    @else
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 30px;">
-            <form method="POST" action="{{ route('documents.summary.generate', $document) }}" style="display: inline;">
+@if($document->summary)
+    <div class="summary-container" style="margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="sparkles" style="color: var(--primary-purple); width: 20px;"></i>
+                <h4 style="font-size: 16px; font-weight: 600;">Ringkasan AI</h4>
+            </div>
+            <form action="{{ route('documents.quiz.generate', $document) }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-primary">Generate Summary</button>
+                <button type="submit" style="background: var(--primary-green); color: white; border: none; padding: 8px 16px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer;">GENERATE KUIS</button>
             </form>
         </div>
-    @endif
-</div>
+
+        <div style="font-size: 14px; line-height: 1.6; color: #eee; margin-bottom: 24px;">
+            {!! nl2br(e($document->summary->content_md)) !!}
+        </div>
+
+        <h4 style="font-size: 14px; color: var(--primary-purple); margin-bottom: 12px;">Poin Penting:</h4>
+        <ul style="padding-left: 20px; color: var(--text-muted); font-size: 13px;">
+            @foreach($document->summary->key_points as $point)
+                <li style="margin-bottom: 8px;">{{ $point }}</li>
+            @endforeach
+        </ul>
+    </div>
+@else
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 48px; text-align: center; border: 1px solid var(--border-color);">
+        <i data-lucide="cpu" style="width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
+        <h3 style="margin-bottom: 12px;">Belum ada ringkasan</h3>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Biarkan AI Siramen menganalisis dokumen ini untuk Anda.</p>
+        
+        <form action="{{ route('documents.summary.generate', $document) }}" method="POST">
+            @csrf
+            <button type="submit" style="background: var(--primary-purple); color: white; border: none; padding: 12px 32px; border-radius: 20px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-purple);">
+                PROSES DENGAN AI
+            </button>
+        </form>
+    </div>
+@endif
 @endsection

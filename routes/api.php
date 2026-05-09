@@ -28,8 +28,9 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::get('/{provider}/callback', [AuthController::class, 'callback'])->name('callback');
 });
 
-// ─── PROTECTED ROUTES ─────────────────────────────────────────────────────────
-Route::middleware('auth:sanctum')->group(function () {
+// ─── PROTECTED ROUTES (Temporarily Unprotected for Development) ─────────────
+// Route::middleware('auth:sanctum')->group(function () {
+Route::name('api.')->group(function () {
 
     // Auth
     Route::prefix('auth')->name('auth.')->group(function () {
